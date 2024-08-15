@@ -1,13 +1,10 @@
-# Blum Minigame Autocliker
+# 💚 Blum Minigame Autocliker
 
 ## An autoclicker for the Blum's drop mini-game. 
 
-## This script automatically puts all the green stars, skipping bombs and freezes, during the mini-game.
+- This script automatically puts all the green stars, skipping bombs and freezes, during the mini-game.
+  - **Choose the desired number of collected stars**
+  - **Automated launch of the mini-game.**
+  - **After starting the mini-game, press the "~" key on your keyboard (toggle on/off)**
 
-<b>There is a choice of the desired number of collected stars</b>
-
-<b>Automated launch of the mini-game.</b>
-
-<b>After starting the mini-game, press the "~" key on your keyboard (toggle on/off)</b>
-
-![example_video](RGB-Outl4w/blum-minigame-autocliker/src/gif-3.gif)
+![example_video](https://github.com/RGB-Outl4w/blum-minigame-autocliker/blob/2dcbdbc4363cac28817b85e87e6cfca28402fc48/src/gif-3.gif)
