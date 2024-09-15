@@ -12,10 +12,23 @@ import pygetwindow as gw
 import win32api
 import win32con
 
-# Constants for clearer code
+
+def resource_path(relative_path):
+    """ Returns the correct path to a resource, 
+       whether running as a script or from an executable.
+    """
+    try:
+        # When run as executable, _MEIPASS will be set 
+        base_path = sys._MEIPASS
+    except Exception:
+        # When run as a script, the current directory is used
+        base_path = os.path.abspath(".") 
+    return os.path.join(base_path, relative_path)
+
+
 CLICK_IMAGES = [
-    os.path.join(sys._MEIPASS, "media\\lobby-play.png") if hasattr(sys, "_MEIPASS") else "media\\lobby-play.png",
-    os.path.join(sys, "_MEIPASS", "media\\continue-play.png") if hasattr(sys, "_MEIPASS") else "media\\continue-play.png"
+    resource_path(r"media\lobby-play.png"), 
+    resource_path(r"media\continue-play.png")
 ]
 
 PERCENTAGES = {
@@ -25,15 +38,17 @@ PERCENTAGES = {
     "4": 1,      # Max points
 }
 
+def hex_to_hsv(hex_color):
+    """Converts a hex color code to HSV tuple within OpenCV's range."""
+    hex_color = hex_color.lstrip("#")
+    rgb = tuple(int(hex_color[i:i + 2], 16) for i in range(0, 6, 2)) 
+    rgb_normalized = np.array([[rgb]], dtype=np.uint8)
+    hsv = cv2.cvtColor(rgb_normalized, cv2.COLOR_RGB2HSV)
+    return hsv[0][0] 
+
 # Pre-calculate HSV values for target and nearby colors
-TARGET_HSVS = [
-    (int(c[1:3], 16) * 180 // 256, int(c[3:5], 16) * 255 // 256, int(c[5:7], 16) * 255 // 256)
-    for c in ["#c9e100", "#bae70e"]
-]
-NEARBY_HSVS = [
-    (int(c[1:3], 16) * 180 // 256, int(c[3:5], 16) * 255 // 256, int(c[5:7], 16) * 255 // 256)
-    for c in ["#abff61", "#87ff27"]
-]
+TARGET_HSVS = [hex_to_hsv(c) for c in ["#c9e100", "#bae70e"]]
+NEARBY_HSVS = [hex_to_hsv(c) for c in ["#abff61", "#87ff27"]]
 
 
 class Logger:
@@ -122,7 +137,9 @@ class AutoClicker:
                         "height": window.height
                     }
                     img = np.array(sct.grab(monitor))
-                    hsv = cv2.cvtColor(img, cv2.COLOR_BGRA2HSV)  # Convert once
+                    
+                    img_bgr = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)  # First BGRA to BGR
+                    hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)  # Then BGR to HSV
 
                     for target_hsv in TARGET_HSVS:  # Using pre-calculated HSVs
                         lower_bound = np.array([max(0, target_hsv[0] - 1), 30, 30])
